@@ -60,9 +60,12 @@ def main():
                 st.write('## Выберите проверочный алгоритм:')
                 st.write('''На данном этапе необходимо сформулировать две гипотезы H0 и H1:\n
     Под H0 (нулевая гипотеза) обычно принимается то, что переменные между которыми идет сравнение, никак не связанны между собой, а все совпадения случайны.\n
-    Под H1 (альтернативная гипотеза) чаще всего подразумевается, что совпадения не случайны и различие между двумя переменными является значимыми.''')
+    Под H1 (альтернативная гипотеза) чаще всего подразумевается, что все совпадения не случайны и различие между двумя переменными является значимыми.''')
                 test_option = st.selectbox('', ['Нет', 'T-test', 'Mann-Whitney U-test', 'Chi-square test'])
                 if test_option != 'Нет':
+                    alpha = st.slider('Выберите уровень значимости (α)', 0.01, 0.1, 0.05, step=0.01)
+                    st.write(f"Уровень значимости (α): {alpha}")
+
                     st.write('## Результат проверки:')
                     if test_option == 'Chi-square test' and (categorical_col1 or categorical_col2):
                         if categorical_col1 and categorical_col2:
@@ -70,10 +73,13 @@ def main():
                             _, p_value, _, _ = chi2_contingency(contingency_table)
                             st.write(f'P-value: {p_value:.5f}')
 
-                            if p_value < 0.05:
-                                st.write('Различия статистически значимы')
+                            if p_value < alpha:
+                                st.markdown('<span style="color:green">Различия статистически значимы</span>',
+                                            unsafe_allow_html=True)
                             else:
-                                st.write('Различия не являются статистически значимыми')
+                                st.markdown(
+                                    '<span style="color:red">Различия не являются статистически значимыми</span>',
+                                    unsafe_allow_html=True)
                         else:
                             st.write('Выбранные переменные должны быть обе категориальными')
                     elif (test_option == 'T-test' or test_option == 'Mann-Whitney U-test') and not (
@@ -86,10 +92,12 @@ def main():
                         st.write(f'Статистика теста: {stat}')
                         st.write(f'P-value: {p_value:.5f}')
 
-                        if p_value < 0.05:
-                            st.write('Различия статистически значимы')
+                        if p_value < alpha:
+                            st.markdown('<span style="color:green">Различия статистически значимы</span>',
+                                        unsafe_allow_html=True)
                         else:
-                            st.write('Различия не являются статистически значимыми')
+                            st.markdown('<span style="color:red">Различия не являются статистически значимыми</span>',
+                                        unsafe_allow_html=True)
 
 
 if __name__ == '__main__':
